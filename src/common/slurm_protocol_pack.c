@@ -10202,6 +10202,14 @@ _pack_launch_tasks_request_msg(launch_tasks_request_msg_t * msg, Buf buffer,
 		pack32(msg->job_step_id, buffer);
 		pack32(msg->node_offset, buffer);
 		pack32(msg->pack_jobid, buffer);
+		pack32(msg->pack_nnodes, buffer);
+info("PACK NODES:%u", msg->pack_nnodes);
+		if (msg->pack_nnodes != NO_VAL) {
+for (i = 0; i < msg->pack_nnodes; i++)
+ info("PACK TASKS[%d]:%u", i, msg->pack_task_cnts[i]);
+			pack16_array(msg->pack_task_cnts, msg->pack_nnodes,
+				     buffer);
+		}
 		pack32(msg->pack_ntasks, buffer);
 		pack32(msg->pack_offset, buffer);
 		pack32(msg->task_offset, buffer);
@@ -10226,6 +10234,7 @@ _pack_launch_tasks_request_msg(launch_tasks_request_msg_t * msg, Buf buffer,
 		slurm_cred_pack(msg->cred, buffer, protocol_version);
 		for (i = 0; i < msg->nnodes; i++) {
 			pack16(msg->tasks_to_launch[i], buffer);
+info("PACK TASK[%d]:%u", i, msg->tasks_to_launch[i]);
 			pack32_array(msg->global_task_ids[i],
 				     (uint32_t) msg->tasks_to_launch[i],
 				     buffer);
@@ -10490,6 +10499,13 @@ _unpack_launch_tasks_request_msg(launch_tasks_request_msg_t **
 		safe_unpack32(&msg->job_step_id, buffer);
 		safe_unpack32(&msg->node_offset, buffer);
 		safe_unpack32(&msg->pack_jobid, buffer);
+		safe_unpack32(&msg->pack_nnodes, buffer);
+		if (msg->pack_nnodes != NO_VAL) {
+			safe_unpack16_array(&msg->pack_task_cnts,
+					    &uint32_tmp, buffer);
+			if (uint32_tmp != msg->pack_nnodes)
+				goto unpack_error;
+		}
 		safe_unpack32(&msg->pack_ntasks, buffer);
 		safe_unpack32(&msg->pack_offset, buffer);
 		safe_unpack32(&msg->task_offset, buffer);
@@ -10603,6 +10619,7 @@ _unpack_launch_tasks_request_msg(launch_tasks_request_msg_t **
 		safe_unpack32(&msg->job_step_id, buffer);
 		msg->node_offset = NO_VAL;
 		msg->pack_jobid  = NO_VAL;
+		msg->pack_nnodes = NO_VAL;
 		msg->pack_ntasks = NO_VAL;
 		msg->pack_offset = NO_VAL;
 		msg->task_offset = NO_VAL;
@@ -10735,6 +10752,7 @@ _unpack_launch_tasks_request_msg(launch_tasks_request_msg_t **
 		safe_unpack32(&msg->job_step_id, buffer);
 		msg->node_offset = NO_VAL;
 		msg->pack_jobid  = NO_VAL;
+		msg->pack_nnodes = NO_VAL;
 		msg->pack_ntasks = NO_VAL;
 		msg->pack_offset = NO_VAL;
 		msg->task_offset = NO_VAL;

@@ -770,7 +770,9 @@ typedef struct launch_tasks_request_msg {
 	uint32_t  job_step_id;
 	uint32_t  node_offset;	/* pack job node offset of NO_VAL */
 	uint32_t  pack_jobid;	/* pack job ID or NO_VAL */
+	uint32_t  pack_nnodes;	/* total task count for entire pack job */
 	uint32_t  pack_ntasks;	/* total task count for entire pack job */
+	uint16_t *pack_task_cnts; /* Number of tasks on each node in pack job */
 	uint32_t  pack_offset;	/* pack job offset of NO_VAL */
 	uint32_t  task_offset;	/* pack job task ID offset of NO_VAL */
 	uint32_t  nnodes;	/* number of nodes in this job step       */

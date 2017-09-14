@@ -136,9 +136,11 @@ typedef struct {
 	uint32_t       node_offset; 	/* pack job node offset or NO_VAL   */
 	uint32_t       node_tasks; /* number of tasks on *this* node        */
 	uint32_t       pack_jobid;	/* pack job ID or NO_VAL */
+	uint32_t       pack_nnodes;	/* total task count for entire pack job */
 	uint32_t       pack_ntasks;	/* total task count for entire pack job */
 	uint32_t       pack_offset; 	/* pack job offset or NO_VAL        */
 	uint32_t       task_offset; 	/* pack job task offset or NO_VAL   */
+	uint16_t      *pack_task_cnts;	/* Number of tasks on each node in pack job */
 	uint16_t      *task_cnts;  /* Number of tasks on each node in job   */
 	uint32_t       cpus_per_task;	/* number of cpus desired per task  */
 	uint32_t       debug;  /* debug level for job slurmd                */

@@ -103,25 +103,54 @@ int pmixp_info_set(const stepd_step_rec_t *job, char ***env)
 	_pmixp_job_info.uid = job->uid;
 	_pmixp_job_info.gid = job->gid;
 
-	/* This node info */
-	_pmixp_job_info.jobid = job->jobid;
+	/* This node's info */
+info("JOBID:%u PACK_JOBID:%u", job->jobid, job->pack_jobid);
+//	if (job->pack_jobid != NO_VAL)
+//		_pmixp_job_info.jobid = job->pack_jobid;
+//	else
+		_pmixp_job_info.jobid = job->jobid;
+
+info("STEPID:%u", job->stepid);
 	_pmixp_job_info.stepid = job->stepid;
+
+info("NODEID:%u PACK_NODEID:%u", job->nodeid, job->nodeid + job->node_offset);
 	_pmixp_job_info.node_id = job->nodeid;
+//	if (job->node_offset != NO_VAL)
+//		_pmixp_job_info.node_id += job->node_offset;
+
+info("NODE_TASKS:%u", job->node_tasks);
 	_pmixp_job_info.node_tasks = job->node_tasks;
 
 	/* Global info */
-	_pmixp_job_info.ntasks = job->ntasks;
-	_pmixp_job_info.nnodes = job->nnodes;
-	msize = sizeof(*_pmixp_job_info.task_cnts) * job->nnodes;
+info("NTASKS:%u PACK_NTASKS:%u", job->ntasks, job->pack_ntasks);
+//	if (job->pack_ntasks != NO_VAL)
+//		_pmixp_job_info.ntasks = job->pack_ntasks;
+//	else
+		_pmixp_job_info.ntasks = job->ntasks;
+
+info("NNODES:%u PACK_NNODES:%u", job->nnodes, job->pack_nnodes);
+//	if (job->pack_nnodes != NO_VAL)
+//		_pmixp_job_info.nnodes = job->pack_nnodes;
+//	else
+		_pmixp_job_info.nnodes = job->nnodes;
+
+	msize = sizeof(*_pmixp_job_info.task_cnts) * _pmixp_job_info.nnodes;
 	_pmixp_job_info.task_cnts = xmalloc(msize);
-	for (i = 0; i < job->nnodes; i++) {
-		_pmixp_job_info.task_cnts[i] = job->task_cnts[i];
+	for (i = 0; i < _pmixp_job_info.nnodes; i++) {
+//		if (job->pack_task_cnts)
+//			_pmixp_job_info.task_cnts[i] = job->pack_task_cnts[i];
+//		else
+			_pmixp_job_info.task_cnts[i] = job->task_cnts[i];
+info("TASK_CNT[%d]:%u", i, _pmixp_job_info.task_cnts[i]);
 	}
 
 	msize = _pmixp_job_info.node_tasks * sizeof(uint32_t);
 	_pmixp_job_info.gtids = xmalloc(msize);
 	for (i = 0; i < job->node_tasks; i++) {
 		_pmixp_job_info.gtids[i] = job->task[i]->gtid;
+//		if (job->task_offset != NO_VAL)
+//			_pmixp_job_info.gtids[i] += job->task_offset;
+info("GTIDS[%d]:%u", i, _pmixp_job_info.gtids[i]);
 	}
 
 	/* Setup hostnames and job-wide info */

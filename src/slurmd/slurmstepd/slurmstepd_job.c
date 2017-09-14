@@ -310,7 +310,13 @@ extern stepd_step_rec_t *stepd_step_rec_create(launch_tasks_request_msg_t *msg,
 	job->array_task_id = NO_VAL;
 	job->node_offset = msg->node_offset;	/* Used for env vars */
 	job->pack_jobid  = msg->pack_jobid;	/* Used for env vars */
-	job->pack_ntasks = msg->pack_ntasks;	/* Used for env vars */
+	job->pack_nnodes = msg->pack_nnodes;	/* Used for env vars */
+	if (msg->pack_nnodes && msg->pack_ntasks && msg->pack_task_cnts) {
+		job->pack_ntasks = msg->pack_ntasks;	/* Used for env vars */
+		i = sizeof(uint16_t) * msg->pack_nnodes;
+		job->pack_task_cnts = xmalloc(i);
+		memcpy(job->pack_task_cnts, msg->pack_task_cnts, i);
+	}
 	job->pack_offset = msg->pack_offset;	/* Used for env vars & labels */
 	job->task_offset = msg->task_offset;	/* Used for env vars & labels */
 	for (i = 0; i < msg->envc; i++) {
@@ -475,6 +481,8 @@ batch_stepd_step_rec_create(batch_job_launch_msg_t *msg)
 	job->array_job_id  = msg->array_job_id;
 	job->array_task_id = msg->array_task_id;
 	job->pack_jobid  = NO_VAL;	/* Used to set env vars */
+	job->pack_nnodes = NO_VAL;	/* Used to set env vars */
+	job->pack_ntasks = NO_VAL;	/* Used to set env vars */
 	job->pack_offset = NO_VAL;	/* Used to set labels and env vars */
 	job->job_core_spec = msg->job_core_spec;
 

@@ -705,9 +705,11 @@ extern int launch_p_step_launch(srun_job_t *job, slurm_step_io_fds_t *cio_fds,
 	launch_params.remote_error_filename  = fname_remote_string(job->efname);
 	launch_params.node_offset = job->node_offset;
 	launch_params.pack_jobid  = job->pack_jobid;
+	launch_params.pack_nnodes = job->pack_nnodes;
 	launch_params.pack_ntasks = job->pack_ntasks;
 	launch_params.pack_offset = job->pack_offset;
 	launch_params.task_offset = job->task_offset;
+	launch_params.pack_task_cnts = job->pack_task_cnts;
 	launch_params.partition = job->partition;
 	launch_params.profile = opt_local->profile;
 	launch_params.task_prolog = opt_local->task_prolog;
