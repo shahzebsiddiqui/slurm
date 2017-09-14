@@ -277,7 +277,7 @@ extern int slurm_step_launch(slurm_step_ctx_t *ctx,
 	}
 	if (params->pack_ntasks != NO_VAL)
 		preserve_env = true;
-	env_array_for_step(&env, ctx->step_resp,
+	env_array_for_step(&env, ctx->step_resp, &launch,
 			   ctx->launch_state->resp_port[0], preserve_env);
 	env_array_merge(&env, (const char **)mpi_env);
 	env_array_free(mpi_env);
@@ -486,7 +486,8 @@ extern int slurm_step_launch_add(slurm_step_ctx_t *ctx,
 		resp_port = first_ctx->launch_state->resp_port[0];
 	if (params->pack_ntasks != NO_VAL)
 		preserve_env = true;
-	env_array_for_step(&env, ctx->step_resp, resp_port, preserve_env);
+	env_array_for_step(&env, ctx->step_resp, &launch, resp_port,
+			   preserve_env);
 	env_array_merge(&env, (const char **)mpi_env);
 	env_array_free(mpi_env);
 
