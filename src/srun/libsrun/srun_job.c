@@ -727,7 +727,7 @@ static int _create_job_step(srun_job_t *job, bool use_all_cpus,
 			job->node_offset = node_offset;
 			job->pack_nnodes = pack_nnodes;
 			job->pack_ntasks = pack_ntasks;
-			job->task_offset = task_offset;
+			job->pack_task_offset = task_offset;
 			if (step_id != NO_VAL)
 				job->stepid = step_id;
 			rc = create_job_step(job, use_all_cpus, opt_local);
@@ -1384,7 +1384,7 @@ static srun_job_t *_job_create_structure(allocation_info_t *ainfo,
 	job->pack_nnodes = NO_VAL;
 	job->pack_ntasks = NO_VAL;
  	job->pack_offset = NO_VAL;
- 	job->task_offset = NO_VAL;
+	job->pack_task_offset = NO_VAL;
 
 #if defined HAVE_BG
 //#if defined HAVE_BGQ && defined HAVE_BG_FILES

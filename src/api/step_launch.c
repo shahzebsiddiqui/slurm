@@ -165,7 +165,7 @@ extern void slurm_step_launch_params_t_init(slurm_step_launch_params_t *ptr)
 	ptr->pack_nnodes  = NO_VAL;
 	ptr->pack_ntasks  = NO_VAL;
 	ptr->pack_offset  = NO_VAL;
-	ptr->task_offset  = NO_VAL;
+	ptr->pack_task_offset = NO_VAL;
 }
 
 /*
@@ -264,7 +264,7 @@ extern int slurm_step_launch(slurm_step_ctx_t *ctx,
 	launch.pack_nnodes = params->pack_nnodes;
 	launch.pack_ntasks = params->pack_ntasks;
 	launch.pack_offset = params->pack_offset;
-	launch.task_offset = params->task_offset;
+	launch.pack_task_offset = params->pack_task_offset;
 	launch.pack_task_cnts = params->pack_task_cnts;
 	if (params->env == NULL) {
 		/*
@@ -354,7 +354,7 @@ extern int slurm_step_launch(slurm_step_ctx_t *ctx,
 						 ctx->step_resp->cred,
 						 params->labelio,
 						 params->pack_offset,
-						 params->task_offset);
+						 params->pack_task_offset);
 		if (ctx->launch_state->io.normal == NULL) {
 			rc = SLURM_ERROR;
 			goto fail1;
@@ -471,7 +471,7 @@ extern int slurm_step_launch_add(slurm_step_ctx_t *ctx,
 	launch.pack_nnodes = params->pack_nnodes;
 	launch.pack_ntasks = params->pack_ntasks;
 	launch.pack_offset = params->pack_offset;
-	launch.task_offset = params->task_offset;
+	launch.pack_task_offset = params->pack_task_offset;
 	launch.pack_task_cnts = params->pack_task_cnts;
 	if (params->env == NULL) {
 		/*
@@ -557,7 +557,7 @@ extern int slurm_step_launch_add(slurm_step_ctx_t *ctx,
 						 ctx->step_resp->cred,
 						 params->labelio,
 						 params->pack_offset,
-						 params->task_offset);
+						 params->pack_task_offset);
 		if (ctx->launch_state->io.normal == NULL) {
 			rc = SLURM_ERROR;
 			goto fail1;

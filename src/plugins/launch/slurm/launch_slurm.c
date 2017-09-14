@@ -673,7 +673,7 @@ extern int launch_p_step_launch(srun_job_t *job, slurm_step_io_fds_t *cio_fds,
 	if (!task_state) {
 		task_state = task_state_create(job->jobid, job->stepid,
 					       job->pack_offset, job->ntasks,
-					       job->task_offset);
+					       job->pack_task_offset);
 		slurm_mutex_lock(&pack_lock);
 		if (!local_job_list)
 			local_job_list = list_create(NULL);
@@ -708,7 +708,7 @@ extern int launch_p_step_launch(srun_job_t *job, slurm_step_io_fds_t *cio_fds,
 	launch_params.pack_nnodes = job->pack_nnodes;
 	launch_params.pack_ntasks = job->pack_ntasks;
 	launch_params.pack_offset = job->pack_offset;
-	launch_params.task_offset = job->task_offset;
+	launch_params.pack_task_offset = job->pack_task_offset;
 	launch_params.pack_task_cnts = job->pack_task_cnts;
 	launch_params.partition = job->partition;
 	launch_params.profile = opt_local->profile;
@@ -815,7 +815,7 @@ extern int launch_p_step_launch(srun_job_t *job, slurm_step_io_fds_t *cio_fds,
 					    launch_params.argv[0]);
 		} else {
 			mpir_set_executable_names(launch_params.argv[0],
-						  job->task_offset,
+						  job->pack_task_offset,
 						  job->ntasks);
 		}
 

@@ -10209,7 +10209,7 @@ _pack_launch_tasks_request_msg(launch_tasks_request_msg_t * msg, Buf buffer,
 		}
 		pack32(msg->pack_ntasks, buffer);
 		pack32(msg->pack_offset, buffer);
-		pack32(msg->task_offset, buffer);
+		pack32(msg->pack_task_offset, buffer);
 		pack32(msg->ntasks, buffer);
 		pack16(msg->ntasks_per_board, buffer);
 		pack16(msg->ntasks_per_core, buffer);
@@ -10504,7 +10504,7 @@ _unpack_launch_tasks_request_msg(launch_tasks_request_msg_t **
 		}
 		safe_unpack32(&msg->pack_ntasks, buffer);
 		safe_unpack32(&msg->pack_offset, buffer);
-		safe_unpack32(&msg->task_offset, buffer);
+		safe_unpack32(&msg->pack_task_offset, buffer);
 		safe_unpack32(&msg->ntasks, buffer);
 		safe_unpack16(&msg->ntasks_per_board, buffer);
 		safe_unpack16(&msg->ntasks_per_core, buffer);
@@ -10618,7 +10618,7 @@ _unpack_launch_tasks_request_msg(launch_tasks_request_msg_t **
 		msg->pack_nnodes = NO_VAL;
 		msg->pack_ntasks = NO_VAL;
 		msg->pack_offset = NO_VAL;
-		msg->task_offset = NO_VAL;
+		msg->pack_task_offset = NO_VAL;
 		safe_unpack32(&uint32_tmp, buffer);
 		safe_unpack32(&uint32_tmp, buffer);
 		safe_unpack32(&uint32_tmp, buffer);
@@ -10751,7 +10751,7 @@ _unpack_launch_tasks_request_msg(launch_tasks_request_msg_t **
 		msg->pack_nnodes = NO_VAL;
 		msg->pack_ntasks = NO_VAL;
 		msg->pack_offset = NO_VAL;
-		msg->task_offset = NO_VAL;
+		msg->pack_task_offset = NO_VAL;
 		safe_unpack32(&msg->ntasks, buffer);
 		safe_unpack16(&msg->ntasks_per_board, buffer);
 		safe_unpack16(&msg->ntasks_per_core, buffer);

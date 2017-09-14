@@ -1942,7 +1942,7 @@ typedef struct {
 	uint32_t pack_ntasks;	/* total task count for entire pack job */
 	uint16_t *pack_task_cnts; /* Number of tasks on each node in pack job */
 	uint32_t pack_offset;	/* Pack job offset or NO_VAL */
-	uint32_t task_offset;	/* Pack job tsk offset or NO_VAL */
+	uint32_t pack_task_offset; /* Pack job task offset or NO_VAL */
 	bool parallel_debug;
 	uint32_t profile;	/* Level of acct_gather_profile {all | none} */
 	char *task_prolog;
