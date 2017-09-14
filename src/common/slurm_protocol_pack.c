@@ -10203,10 +10203,7 @@ _pack_launch_tasks_request_msg(launch_tasks_request_msg_t * msg, Buf buffer,
 		pack32(msg->node_offset, buffer);
 		pack32(msg->pack_jobid, buffer);
 		pack32(msg->pack_nnodes, buffer);
-info("PACK NODES:%u", msg->pack_nnodes);
 		if (msg->pack_nnodes != NO_VAL) {
-for (i = 0; i < msg->pack_nnodes; i++)
- info("PACK TASKS[%d]:%u", i, msg->pack_task_cnts[i]);
 			pack16_array(msg->pack_task_cnts, msg->pack_nnodes,
 				     buffer);
 		}
@@ -10234,7 +10231,6 @@ for (i = 0; i < msg->pack_nnodes; i++)
 		slurm_cred_pack(msg->cred, buffer, protocol_version);
 		for (i = 0; i < msg->nnodes; i++) {
 			pack16(msg->tasks_to_launch[i], buffer);
-info("PACK TASK[%d]:%u", i, msg->tasks_to_launch[i]);
 			pack32_array(msg->global_task_ids[i],
 				     (uint32_t) msg->tasks_to_launch[i],
 				     buffer);
