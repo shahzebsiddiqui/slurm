@@ -464,6 +464,11 @@ slurm_step_ctx_get (slurm_step_ctx_t *ctx, int ctx_key, ...)
 		*char_array_pptr = nodelist_nth_host(
 			ctx->step_resp->step_layout->node_list, node_inx);
 		break;
+	case SLURM_STEP_CTX_NODE_LIST:
+		char_array_pptr = (char **) va_arg(ap, void *);
+		*char_array_pptr =
+			xstrdup(ctx->step_resp->step_layout->node_list);
+		break;
 	case SLURM_STEP_CTX_USER_MANAGED_SOCKETS:
 		int_ptr = va_arg(ap, int *);
 		int_array_pptr = va_arg(ap, int **);
