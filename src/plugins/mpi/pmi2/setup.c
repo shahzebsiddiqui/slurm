@@ -100,15 +100,28 @@ _setup_stepd_job_info(const stepd_step_rec_t *job, char ***env)
 
 	memset(&job_info, 0, sizeof(job_info));
 
-	job_info.jobid  = job->jobid;
-	job_info.stepid = job->stepid;
-	job_info.nnodes = job->nnodes;
-	job_info.nodeid = job->nodeid;
-	job_info.ntasks = job->ntasks;
-	job_info.ltasks = job->node_tasks;
-	job_info.gtids = xmalloc(job->node_tasks * sizeof(uint32_t));
-	for (i = 0; i < job->node_tasks; i ++) {
-		job_info.gtids[i] = job->task[i]->gtid;
+	if (job->pack_jobid && (job->pack_jobid != NO_VAL)) {
+		job_info.jobid  = job->pack_jobid;
+		job_info.stepid = job->stepid;
+		job_info.nnodes = job->pack_nnodes;
+		job_info.nodeid = job->nodeid + job->node_offset;
+		job_info.ntasks = job->pack_ntasks;
+		job_info.ltasks = job->node_tasks;
+		job_info.gtids = xmalloc(job_info.ltasks * sizeof(uint32_t));
+		for (i = 0; i < job_info.ltasks; i ++) {
+			job_info.gtids[i] = job->task[i]->gtid;
+		}
+	} else {
+		job_info.jobid  = job->jobid;
+		job_info.stepid = job->stepid;
+		job_info.nnodes = job->nnodes;
+		job_info.nodeid = job->nodeid;
+		job_info.ntasks = job->ntasks;
+		job_info.ltasks = job->node_tasks;
+		job_info.gtids = xmalloc(job_info.ltasks * sizeof(uint32_t));
+		for (i = 0; i < job_info.ltasks; i ++) {
+			job_info.gtids[i] = job->task[i]->gtid;
+		}
 	}
 
 	p = getenvp(*env, PMI2_PMI_DEBUGGED_ENV);
@@ -136,7 +149,9 @@ _setup_stepd_job_info(const stepd_step_rec_t *job, char ***env)
 		xstrfmtcat(job_info.pmi_jobid, "%u.%u", job->jobid,
 			   job->stepid);
 	}
+//FIXME-PACK HOW TO GET THIS?
 	p = getenvp(*env, PMI2_STEP_NODES_ENV);
+info("PMI2_STEP_NODES_ENV=%s", p);
 	if (!p) {
 		error("mpi/pmi2: unable to find nodes in job environment");
 		return SLURM_ERROR;
@@ -149,7 +164,9 @@ _setup_stepd_job_info(const stepd_step_rec_t *job, char ***env)
 	 * there is the task distribution info in the launch_tasks_request_msg_t,
 	 * but it is not stored in the stepd_step_rec_t.
 	 */
+//FIXME-PACK HOW TO GET THIS?
 	p = getenvp(*env, PMI2_PROC_MAPPING_ENV);
+info("PMI2_PROC_MAPPING_ENV=%s", p);
 	if (!p) {
 		error("PMI2_PROC_MAPPING_ENV not found");
 		return SLURM_ERROR;
