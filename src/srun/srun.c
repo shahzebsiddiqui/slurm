@@ -269,7 +269,7 @@ static void _launch_app(srun_job_t *job, List srun_job_list, bool got_alloc)
 	pthread_mutex_t step_mutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_cond_t step_cond   = PTHREAD_COND_INITIALIZER;
 	srun_job_t *first_job = NULL;
-	char *launch_type;
+	char *launch_type, *pack_node_list = NULL;
 	bool need_mpir = false;
 	uint16_t *tmp_task_cnt = NULL, *pack_task_cnts = NULL;
 
@@ -290,16 +290,31 @@ static void _launch_app(srun_job_t *job, List srun_job_list, bool got_alloc)
 
 		job_iter = list_iterator_create(srun_job_list);
 		while ((job = (srun_job_t *) list_next(job_iter))) {
+			char *node_list = NULL;
 			total_ntasks += job->ntasks;
 			xrealloc(pack_task_cnts, sizeof(uint16_t)*total_ntasks);
-			slurm_step_ctx_get(job->step_ctx, SLURM_STEP_CTX_TASKS,
-					   &tmp_task_cnt);
+			(void) slurm_step_ctx_get(job->step_ctx,
+						  SLURM_STEP_CTX_TASKS,
+						  &tmp_task_cnt);
 			if (!tmp_task_cnt) {
 				fatal("%s: job %u has NULL task array",
 				      __func__, job->jobid);
 			}
 			memcpy(pack_task_cnts + node_offset, tmp_task_cnt,
 			       sizeof(uint16_t) * job->nhosts);
+
+			(void) slurm_step_ctx_get(job->step_ctx,
+						  SLURM_STEP_CTX_NODE_LIST,
+						  &node_list);
+			if (!node_list) {
+				fatal("%s: job %u has NULL hostname",
+				      __func__, job->jobid);
+			}
+			if (pack_node_list)
+				xstrfmtcat(pack_node_list, ",%s", node_list);
+			else
+				pack_node_list = xstrdup(node_list);
+			xfree(node_list);
 			node_offset += job->nhosts;
 		}
 		list_iterator_reset(job_iter);
@@ -329,11 +344,12 @@ static void _launch_app(srun_job_t *job, List srun_job_list, bool got_alloc)
 			slurm_mutex_lock(&step_mutex);
 			step_cnt++;
 			slurm_mutex_unlock(&step_mutex);
+			job->pack_node_list = xstrdup(pack_node_list);
 			if (pack_step_cnt > 1) {
 				xassert(node_offset == job->pack_nnodes);
 				job->pack_task_cnts = xmalloc(sizeof(uint16_t) *
 							      job->pack_nnodes);
-//FIXME: We need to get pack nodelist and task counts in same order
+//FIXME: We need to get pack_node_list and pack_task_cnts in same order
 				memcpy(job->pack_task_cnts, pack_task_cnts,
 				       sizeof(uint16_t) * job->pack_nnodes);
 			}
@@ -356,6 +372,7 @@ static void _launch_app(srun_job_t *job, List srun_job_list, bool got_alloc)
 				usleep(10000);  /* sleep and retry */
 			}
 		}
+		xfree(pack_node_list);
 		xfree(pack_task_cnts);
 		slurm_attr_destroy(&attr_steps);
 		list_iterator_destroy(job_iter);
@@ -424,8 +441,8 @@ static void _setup_one_job_env(opt_t *opt_local, srun_job_t *job,
 	slurm_step_ctx_get(job->step_ctx, SLURM_STEP_CTX_TASKS, &tasks);
 
 	env->select_jobinfo = job->select_jobinfo;
-	if (job->pack_nodelist)
-		env->nodelist = job->pack_nodelist;
+	if (job->pack_node_list)
+		env->nodelist = job->pack_node_list;
 	else
 		env->nodelist = job->nodelist;
 	env->partition = job->partition;

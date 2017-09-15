@@ -1389,10 +1389,16 @@ env_array_for_step(char ***dest,
 	tpn = uint16_array_to_str(step->step_layout->node_cnt,
 				  step->step_layout->tasks);
 	env_array_overwrite_fmt(dest, "SLURM_STEP_ID", "%u", step->job_step_id);
-	env_array_overwrite_fmt(dest, "SLURM_STEP_NODELIST",
-				"%s", step->step_layout->node_list);
-	env_array_append_fmt(dest, "SLURM_JOB_NODELIST",
-			     "%s", step->step_layout->node_list);
+
+	if (launch->pack_node_list) {
+		tmp = launch->pack_node_list;
+		env_array_overwrite_fmt(dest, "SLURM_JOB_NODELIST", "%s", tmp);
+	} else {
+		tmp = step->step_layout->node_list;
+		env_array_append_fmt(dest, "SLURM_JOB_NODELIST", "%s", tmp);
+	}
+	env_array_overwrite_fmt(dest, "SLURM_STEP_NODELIST", "%s", tmp);
+
 	if (cluster_flags & CLUSTER_FLAG_BG) {
 		char geo_char[HIGHEST_DIMENSIONS+1];
 

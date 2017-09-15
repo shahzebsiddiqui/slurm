@@ -266,6 +266,7 @@ extern int slurm_step_launch(slurm_step_ctx_t *ctx,
 	launch.pack_offset = params->pack_offset;
 	launch.pack_task_offset = params->pack_task_offset;
 	launch.pack_task_cnts = params->pack_task_cnts;
+	launch.pack_node_list = params->pack_node_list;
 	if (params->env == NULL) {
 		/*
 		 * If the user didn't specify an environment, then use the
@@ -473,6 +474,7 @@ extern int slurm_step_launch_add(slurm_step_ctx_t *ctx,
 	launch.pack_offset = params->pack_offset;
 	launch.pack_task_offset = params->pack_task_offset;
 	launch.pack_task_cnts = params->pack_task_cnts;
+	launch.pack_node_list = params->pack_node_list;
 	if (params->env == NULL) {
 		/*
 		 * if the user didn't specify an environment, grab the

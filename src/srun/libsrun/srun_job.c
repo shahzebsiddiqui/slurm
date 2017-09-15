@@ -710,8 +710,6 @@ static int _create_job_step(srun_job_t *job, bool use_all_cpus,
 		while ((job = (srun_job_t *) list_next(job_iter))) {
 			if (pack_jobid)
 				job->pack_jobid = pack_jobid;
-			if (pack_nodelist)
-				job->pack_nodelist = xstrdup(pack_nodelist);
 			job->stepid = NO_VAL;
 			pack_nnodes += job->nhosts;
 			pack_ntasks += job->ntasks;
