@@ -1386,8 +1386,6 @@ env_array_for_step(char ***dest,
 	uint32_t node_cnt = step->step_layout->node_cnt, task_cnt;
 	uint32_t cluster_flags = slurmdb_setup_cluster_flags();
 
-	tpn = uint16_array_to_str(step->step_layout->node_cnt,
-				  step->step_layout->tasks);
 	env_array_overwrite_fmt(dest, "SLURM_STEP_ID", "%u", step->job_step_id);
 
 	if (launch->pack_node_list) {
@@ -1431,7 +1429,21 @@ env_array_for_step(char ***dest,
 		task_cnt = step->step_layout->task_cnt;
 	env_array_overwrite_fmt(dest, "SLURM_STEP_NUM_TASKS", "%u", task_cnt);
 
+	if (launch->pack_task_cnts) {
+		tpn = uint16_array_to_str(launch->pack_nnodes,
+					  launch->pack_task_cnts);
+		env_array_overwrite_fmt(dest, "SLURM_TASKS_PER_NODE", "%s",
+					tpn);
+	} else {
+		tpn = uint16_array_to_str(step->step_layout->node_cnt,
+					  step->step_layout->tasks);
+		if (!preserve_env) {
+			env_array_overwrite_fmt(dest, "SLURM_TASKS_PER_NODE",
+						"%s", tpn);
+		}
+	}
 	env_array_overwrite_fmt(dest, "SLURM_STEP_TASKS_PER_NODE", "%s", tpn);
+
 	env_array_overwrite_fmt(dest, "SLURM_STEP_LAUNCHER_PORT",
 				"%hu", launcher_port);
 	if (step->resv_ports) {
@@ -1456,8 +1468,6 @@ env_array_for_step(char ***dest,
 		/* keep around for old scripts */
 		env_array_overwrite_fmt(dest, "SLURM_NPROCS",
 					"%u", step->step_layout->task_cnt);
-		env_array_overwrite_fmt(dest, "SLURM_TASKS_PER_NODE", "%s",
-					tpn);
 	}
 	env_array_overwrite_fmt(dest, "SLURM_SRUN_COMM_PORT",
 				"%hu", launcher_port);

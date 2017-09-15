@@ -349,7 +349,7 @@ static void _launch_app(srun_job_t *job, List srun_job_list, bool got_alloc)
 				xassert(node_offset == job->pack_nnodes);
 				job->pack_task_cnts = xmalloc(sizeof(uint16_t) *
 							      job->pack_nnodes);
-//FIXME: We need to get pack_node_list and pack_task_cnts in same order
+//FIXME-PACK: We need to get pack_node_list and pack_task_cnts in same order
 				memcpy(job->pack_task_cnts, pack_task_cnts,
 				       sizeof(uint16_t) * job->pack_nnodes);
 			}
