@@ -925,7 +925,8 @@ enum ctx_keys {
 	SLURM_STEP_CTX_HOST,
 	SLURM_STEP_CTX_JOBID,
 	SLURM_STEP_CTX_USER_MANAGED_SOCKETS,
-	SLURM_STEP_CTX_NODE_LIST	/* step's node list, must xfree */
+	SLURM_STEP_CTX_NODE_LIST,	/* step's node list, must xfree */
+	SLURM_STEP_CTX_TIDS	/* get array of task IDs for all nodes */
 };
 
 /* CR_CPU, CR_SOCKET and CR_CORE are mututally exclusive
@@ -1942,6 +1943,7 @@ typedef struct {
 	uint32_t pack_nnodes;	/* total task count for entire pack job */
 	uint32_t pack_ntasks;	/* total task count for entire pack job */
 	uint16_t *pack_task_cnts; /* Number of tasks on each node in pack job */
+	uint32_t **pack_tids;	/* Task IDs on each node in pack job */
 	uint32_t pack_offset;	/* Pack job offset or NO_VAL */
 	uint32_t pack_task_offset; /* Pack job task offset or NO_VAL */
 	char *pack_node_list;	/* Pack step node list */

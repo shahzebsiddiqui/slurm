@@ -710,6 +710,7 @@ extern int launch_p_step_launch(srun_job_t *job, slurm_step_io_fds_t *cio_fds,
 	launch_params.pack_offset = job->pack_offset;
 	launch_params.pack_task_offset = job->pack_task_offset;
 	launch_params.pack_task_cnts = job->pack_task_cnts;
+	launch_params.pack_tids = job->pack_tids;
 	launch_params.pack_node_list = job->pack_node_list;
 	launch_params.partition = job->partition;
 	launch_params.profile = opt_local->profile;
@@ -782,7 +783,7 @@ extern int launch_p_step_launch(srun_job_t *job, slurm_step_io_fds_t *cio_fds,
 	update_job_state(job, SRUN_JOB_LAUNCHING);
 	launch_start_time = time(NULL);
 	if (first_launch) {
-		if (slurm_step_launch(job->step_ctx, &launch_params,
+		if (slurm_step_launch(job->step_ctx, &launch_params,		// CALL HERE
 				      &callbacks, opt_local->pack_step_cnt)
 				!= SLURM_SUCCESS) {
 			rc = errno;

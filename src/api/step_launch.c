@@ -187,7 +187,6 @@ static void _rebuild_mpi_layout(slurm_step_ctx_t *ctx,
 				const slurm_step_launch_params_t *params)
 {
 	slurm_step_layout_t *new_step_layout, *orig_step_layout;
-	int i;
 
 //FIXME-PACK - Line below prevents step from exiting
 //	ctx->launch_state->mpi_info->jobid = params->pack_jobid;
@@ -203,20 +202,10 @@ static void _rebuild_mpi_layout(slurm_step_ctx_t *ctx,
 	new_step_layout->plane_size = orig_step_layout->plane_size;
 	new_step_layout->start_protocol_ver =
 		orig_step_layout->start_protocol_ver;
-	new_step_layout->tasks = xmalloc(sizeof(uint16_t) *params->pack_nnodes);
-//FIXME-PACK - It would be nice to get task counts for all nodes in all steps
-	for (i = 0; i < orig_step_layout->node_cnt; i++) {
-		new_step_layout->tasks[i + params->node_offset] =
-			orig_step_layout->tasks[i];
-	}
+	new_step_layout->tasks = params->pack_task_cnts;
 	new_step_layout->task_cnt = orig_step_layout->task_cnt;
 	new_step_layout->task_dist = orig_step_layout->task_dist;
-	new_step_layout->tids = xmalloc(sizeof(uint32_t) * params->pack_nnodes);
-//FIXME-PACK - It would be nice to get task IDs for all nodes in all steps
-	for (i = 0; i < orig_step_layout->node_cnt; i++) {
-		new_step_layout->tids[i + params->node_offset] =
-			orig_step_layout->tids[i] + params->pack_task_offset;
-	}
+	new_step_layout->tids = params->pack_tids;
 }
 
 /*
