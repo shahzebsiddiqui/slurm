@@ -67,7 +67,9 @@ static int *initialized = NULL;
 static int *finalized = NULL;
 
 static eio_handle_t *pmi2_handle;
+static volatile bool agent_started;
 static volatile bool agent_running;
+static volatile bool agent_stopped;
 static pthread_mutex_t agent_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static bool _tree_listen_readable(eio_obj_t *obj);
@@ -357,21 +359,29 @@ pmi2_start_agent(void)
 	int retries = 0;
 	pthread_attr_t attr;
 	pthread_t pmi2_agent_tid = 0;
+	bool is_started;
 
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-	while ((errno = pthread_create(&pmi2_agent_tid, &attr,
-				       &_agent, NULL))) {
-		if (++retries > MAX_RETRIES) {
-			error ("mpi/pmi2: pthread_create error %m");
-			slurm_attr_destroy(&attr);
-			return SLURM_ERROR;
+	slurm_mutex_lock(&agent_mutex);
+	is_started = agent_started;
+	agent_started = true;
+	slurm_mutex_unlock(&agent_mutex);
+
+	if (!is_started) {
+		pthread_attr_init(&attr);
+		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+		while ((errno = pthread_create(&pmi2_agent_tid, &attr,
+					       &_agent, NULL))) {
+			if (++retries > MAX_RETRIES) {
+				error ("mpi/pmi2: pthread_create error %m");
+				slurm_attr_destroy(&attr);
+				return SLURM_ERROR;
+			}
+			sleep(1);
 		}
-		sleep(1);
+		slurm_attr_destroy(&attr);
+		debug("mpi/pmi2: started agent thread (%lu)",
+		      (unsigned long) pmi2_agent_tid);
 	}
-	slurm_attr_destroy(&attr);
-	debug("mpi/pmi2: started agent thread (%lu)",
-	      (unsigned long) pmi2_agent_tid);
 
 	/* wait for the agent to start */
 	while (!_agent_running_test()) {
@@ -387,14 +397,21 @@ pmi2_start_agent(void)
 extern int
 pmi2_stop_agent(void)
 {
-	/* brake eio loop */
-	if (pmi2_handle != NULL) {
+	bool is_stopped;
+
+	slurm_mutex_lock(&agent_mutex);
+	is_stopped = agent_stopped;
+	agent_stopped = true;
+	slurm_mutex_unlock(&agent_mutex);
+
+	if (!is_stopped && pmi2_handle)
 		eio_signal_shutdown(pmi2_handle);
-		/* wait for the agent to finish */
-		while (_agent_running_test()) {
-			sched_yield();
-		}
+
+	/* wait for the agent to finish */
+	while (_agent_running_test()) {
+		sched_yield();
 	}
+
 	return SLURM_SUCCESS;
 }
 
