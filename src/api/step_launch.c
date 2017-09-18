@@ -203,7 +203,7 @@ static void _rebuild_mpi_layout(slurm_step_ctx_t *ctx,
 	new_step_layout->start_protocol_ver =
 		orig_step_layout->start_protocol_ver;
 	new_step_layout->tasks = params->pack_task_cnts;
-	new_step_layout->task_cnt = orig_step_layout->task_cnt;
+	new_step_layout->task_cnt = params->pack_ntasks;
 	new_step_layout->task_dist = orig_step_layout->task_dist;
 	new_step_layout->tids = params->pack_tids;
 }
