@@ -516,6 +516,17 @@ extern int get_max_pack_group(void)
 	return max_pack_offset;
 }
 
+static opt_t *_opt_copy(void)
+{
+	opt_t *opt_dup;
+
+	opt_dup = xmalloc(sizeof(opt_t));
+	memcpy(opt_dup, &opt, sizeof(opt_t));
+	opt_dup->cmd_name = xstrdup(opt.cmd_name);
+
+	return opt_dup;
+}
+
 /*
  * process options:
  * 1. set defaults
@@ -542,12 +553,9 @@ extern int initialize_and_process_args(int argc, char **argv, int *argc_off)
 			continue;
 		pass_number++;
 		if (pending_append) {
-			opt_t *opt_dup;
-			opt_dup = xmalloc(sizeof(opt_t));
-			memcpy(opt_dup, &opt, sizeof(opt_t));
 			if (!opt_list)
 				opt_list = list_create(NULL);
-			list_append(opt_list, opt_dup);
+			list_append(opt_list, _opt_copy());
 			pending_append = false;
 		}
 
