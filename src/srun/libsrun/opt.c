@@ -732,6 +732,7 @@ static void _opt_default(void)
 		opt.delay_boot		= NO_VAL;
 		xfree(opt.dependency);
 		opt.disable_status	= false;
+		opt.distribution	= SLURM_DIST_UNKNOWN;
 		opt.egid		= (gid_t) -1;
 		xfree(opt.efname);
 		xfree(opt.epilog);
@@ -827,7 +828,6 @@ static void _opt_default(void)
 	opt.cpu_freq_gov		= NO_VAL;
 	opt.cpus_per_task		= 0;
 	opt.cpus_set			= false;
-	opt.distribution		= SLURM_DIST_UNKNOWN;
 	opt.extra_set			= false;
 	/* opt.geometry[i]		= 0;	See above */
 	opt.gres			= NULL;
