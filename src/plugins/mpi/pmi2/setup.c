@@ -149,9 +149,7 @@ _setup_stepd_job_info(const stepd_step_rec_t *job, char ***env)
 		xstrfmtcat(job_info.pmi_jobid, "%u.%u", job->jobid,
 			   job->stepid);
 	}
-//FIXME-PACK HOW TO GET THIS?
 	p = getenvp(*env, PMI2_STEP_NODES_ENV);
-info("PMI2_STEP_NODES_ENV=%s", p);
 	if (!p) {
 		error("mpi/pmi2: unable to find nodes in job environment");
 		return SLURM_ERROR;
@@ -164,9 +162,7 @@ info("PMI2_STEP_NODES_ENV=%s", p);
 	 * there is the task distribution info in the launch_tasks_request_msg_t,
 	 * but it is not stored in the stepd_step_rec_t.
 	 */
-//FIXME-PACK HOW TO GET THIS?
 	p = getenvp(*env, PMI2_PROC_MAPPING_ENV);
-info("PMI2_PROC_MAPPING_ENV=%s", p);
 	if (!p) {
 		error("PMI2_PROC_MAPPING_ENV not found");
 		return SLURM_ERROR;
