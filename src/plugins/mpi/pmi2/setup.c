@@ -775,35 +775,38 @@ _setup_srun_task_launch_detection(void)
 extern int
 pmi2_setup_srun(const mpi_plugin_client_info_t *job, char ***env)
 {
-	int rc;
+	static pthread_mutex_t setup_mutex = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_cond_t setup_cond  = PTHREAD_COND_INITIALIZER;
+	static int global_rc = -1;
+	int rc = SLURM_SUCCESS;
 
 	run_in_stepd = false;
 
-	rc = _setup_srun_job_info(job);
-	if (rc != SLURM_SUCCESS)
-		return rc;
-
-	rc = _setup_srun_tree_info(job);
-	if (rc != SLURM_SUCCESS)
-		return rc;
-
-	rc = _setup_srun_socket(job);
-	if (rc != SLURM_SUCCESS)
-		return rc;
-
-	rc = _setup_srun_kvs(job);
-	if (rc != SLURM_SUCCESS)
-		return rc;
-
-	rc = _setup_srun_environ(job, env);
-	if (rc != SLURM_SUCCESS)
-		return rc;
-
-	if (job_info.spawn_seq) {
-		rc = _setup_srun_task_launch_detection();
-		if (rc != SLURM_SUCCESS)
-			return rc;
+	if ((job->pack_jobid == NO_VAL) || (job->pack_jobid == job->jobid)) {
+		rc = _setup_srun_job_info(job);
+		if (rc == SLURM_SUCCESS)
+			rc = _setup_srun_tree_info(job);
+		if (rc == SLURM_SUCCESS)
+			rc = _setup_srun_socket(job);
+		if (rc == SLURM_SUCCESS)
+			rc = _setup_srun_kvs(job);
+		if (rc == SLURM_SUCCESS)
+			rc = _setup_srun_environ(job, env);
+		if ((rc == SLURM_SUCCESS) && job_info.spawn_seq)
+			rc = _setup_srun_task_launch_detection();
+		slurm_mutex_lock(&setup_mutex);
+		global_rc = rc;
+		slurm_cond_broadcast(&setup_cond);
+		slurm_mutex_unlock(&setup_mutex);
+	} else {
+		slurm_mutex_lock(&setup_mutex);
+		while (global_rc == -1)
+			slurm_cond_wait(&setup_cond, &setup_mutex);
+		rc = global_rc;
+		slurm_mutex_unlock(&setup_mutex);
+		if (rc == SLURM_SUCCESS)
+			rc = _setup_srun_environ(job, env);
 	}
 
-	return SLURM_SUCCESS;
+	return rc;
 }
