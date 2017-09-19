@@ -188,8 +188,6 @@ static void _rebuild_mpi_layout(slurm_step_ctx_t *ctx,
 {
 	slurm_step_layout_t *new_step_layout, *orig_step_layout;
 
-//FIXME-PACK - Line below prevents step from exiting
-//	ctx->launch_state->mpi_info->jobid = params->pack_jobid;
 	ctx->launch_state->mpi_info->pack_jobid = params->pack_jobid;
 	new_step_layout = xmalloc(sizeof(slurm_step_layout_t));
 	orig_step_layout = ctx->launch_state->mpi_info->step_layout;
