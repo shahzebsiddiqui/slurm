@@ -115,16 +115,12 @@ distribution of "cyclic" will distribute the first 4 tasks in a cyclic fashion
 on nodes "nid00001" and "nid00002", then distribute the next 4 tasks in a cyclic
 fashion on nodes "nid00003" and "nid00004" as shown below.</p>
 
-<table width="100%" border=1 cellspacing=0 cellpadding=4>
-<tr>
-  <th width="25%">Node nid00001</th>
-  <th width="25%">Node nid00002</th>
-  <th width="25%">Node nid00003</th>
-  <th width="25%">Node nid00004</th>
- </tr>
-<tr><td nowrap>Rank 0</td><td>Rank 1</td><td>Rank 4</td><td>Rank 5</td></tr>
-<tr><td nowrap>Rank 2</td><td>Rank 3</td><td>Rank 6</td><td>Rank 7</td></tr>
+<table width="100%" border=1 cellspacing=4 cellpadding=4>
+<tr><td align=center>Node nid00001</td><td align=center>Node nid00002</td><td align=center>Node nid00003</td><td align=center>Node nid00004</td></tr>
+<tr><td align=center nowrap>Rank 0</td><td align=center>Rank 1</td><td align=center>Rank 4</td><td align=center>Rank 5</td></tr>
+<tr><td align=center nowrap>Rank 2</td><td align=center>Rank 3</td><td align=center>Rank 6</td><td align=center>Rank 7</td></tr>
 </table>
+<br>
 
 <p>Some options should be specified only in the first job component.
 For example, specifyihg a batch job output file in the second job component's
