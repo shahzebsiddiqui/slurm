@@ -1434,6 +1434,8 @@ env_array_for_step(char ***dest,
 					  launch->pack_task_cnts);
 		env_array_overwrite_fmt(dest, "SLURM_TASKS_PER_NODE", "%s",
 					tpn);
+		env_array_overwrite_fmt(dest, "SLURM_NNODES", "%u",
+					launch->pack_nnodes);
 	} else {
 		tpn = uint16_array_to_str(step->step_layout->node_cnt,
 					  step->step_layout->tasks);
