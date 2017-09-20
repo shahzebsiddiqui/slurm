@@ -1390,6 +1390,7 @@ env_array_for_step(char ***dest,
 
 	if (launch->pack_node_list) {
 		tmp = launch->pack_node_list;
+		env_array_overwrite_fmt(dest, "SLURM_NODELIST", "%s", tmp);
 		env_array_overwrite_fmt(dest, "SLURM_JOB_NODELIST", "%s", tmp);
 	} else {
 		tmp = step->step_layout->node_list;
