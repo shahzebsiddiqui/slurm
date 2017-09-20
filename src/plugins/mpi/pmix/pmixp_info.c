@@ -104,7 +104,7 @@ int pmixp_info_set(const stepd_step_rec_t *job, char ***env)
 	_pmixp_job_info.gid = job->gid;
 
 	if ((job->pack_jobid != 0) && (job->pack_jobid != NO_VAL)) {
-		_pmixp_job_info.jobid = job->jobid;
+		_pmixp_job_info.jobid = job->pack_jobid;
 		_pmixp_job_info.stepid = job->stepid;
 		_pmixp_job_info.node_id = job->nodeid  + job->node_offset;
 		_pmixp_job_info.node_tasks = job->node_tasks;
@@ -139,7 +139,10 @@ int pmixp_info_set(const stepd_step_rec_t *job, char ***env)
 			_pmixp_job_info.gtids[i] = job->task[i]->gtid;
 	}
 #if 0
-	info("JOBID:%u", _pmixp_job_info.jobid);
+	if ((job->pack_jobid != 0) && (job->pack_jobid != NO_VAL))
+		info("PACK JOBID:%u", _pmixp_job_info.jobid);
+	else
+		info("JOBID:%u", _pmixp_job_info.jobid);
 	info("STEPID:%u", _pmixp_job_info.stepid);
 	info("NODEID:%u", _pmixp_job_info.node_id);
 	info("NODE_TASKS:%u", _pmixp_job_info.node_tasks);
